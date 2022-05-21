@@ -3,24 +3,34 @@ version: "3.5"
 services:
 
   nginx:
+Jn    container_name: nginx
     image: nginx:latest
     ports:
       - 127.0.0.1:80:80
+    networks:
+      - docker_lamp_network
     volumes:
       - ./www:/var/www/html
       - ./configs/nginx:/etc/nginx/conf.d
       - ./logs/nginx:/var/log/nginx
 
   php-fpm:
+    container_name: php_fpm
     build:
       context: php-fpm
     volumes:
       - ./www:/var/www/html
+      - .logs/php-fpm:/var/log/php_fpm
+    networks:
+      - docker_lamp_network
 
   mariadb:
+    container_name: maria_database
     image: mariadb:10.7.3
     ports:
       - 127.0.0.1:3306:3306
+    networks:
+      - docker_lamp_network
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: testdb
@@ -33,7 +43,13 @@ services:
     image: phpmyadmin:latest
     ports:
       - 127.0.0.1:8080:8080
+    networks:
+      - docker_lamp_network
     environment:
       PMA_HOST: mariadb
       PMA_USER: test_user
       PMA_PASSWORD: test_userpass
+
+networks:
+  docker_lamp_network:
+    driver: bridge
