@@ -14,6 +14,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 # Install additional PHP libraries
 RUN docker-php-ext-install bcmath pdo_mysql
 
+# Кастомный php.ini
+ADD php.ini /usr/local/etc/php/conf.d/my-custom.ini
+
+# Создание дирректорий для сессий и логов
+RUN mkdir /tmp/php_sessions
+RUN chmod 777 /tmp/php_sessions
+RUN mkdir /var/log/php_fpm
+
 # Install libraries for compiling GD, then build it
 RUN apk add --no-cache freetype libpng libjpeg-turbo freetype-dev libpng-dev libjpeg-turbo-dev \
  && docker-php-ext-install gd \
